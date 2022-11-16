@@ -70,6 +70,8 @@ class Simulator {
         int getFluidSimulationFrequency() const { return m_fluidSimulationSteps * m_simulationFrequency; }
 
         double getTimestep() const { return 1.0 / m_simulationFrequency; }
+        double getSinceLastUpdate() const { return m_sinceLastUpdate; }
+        void resetSinceLastUpdate() { m_sinceLastUpdate = 0.0; }
 
         void setTargetSynthesizerLatency(double latency) { m_targetSynthesizerLatency = latency; }
         double getTargetSynthesizerLatency() const { return m_targetSynthesizerLatency; }
@@ -122,6 +124,8 @@ class Simulator {
 
         int m_simulationFrequency;
         int m_fluidSimulationSteps;
+        double m_elapsedTime;
+        double m_sinceLastUpdate;
 
         double m_targetSynthesizerLatency;
         double m_simulationSpeed;
