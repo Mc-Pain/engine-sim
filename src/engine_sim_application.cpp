@@ -826,21 +826,26 @@ void EngineSimApplication::processEngineInput() {
     }
 
     const double prevTargetThrottle = m_targetSpeedSetting;
-    m_targetSpeedSetting = fineControlMode ? m_targetSpeedSetting : 0.0;
+    m_targetSpeedSetting = m_fineThrottleControlUsed ? m_targetSpeedSetting : 0.0;
     if (m_engine.IsKeyDown(ysKey::Code::Q)) {
         m_targetSpeedSetting = 0.01;
+        m_fineThrottleControlUsed = false;
     }
     else if (m_engine.IsKeyDown(ysKey::Code::W)) {
         m_targetSpeedSetting = 0.1;
+        m_fineThrottleControlUsed = false;
     }
     else if (m_engine.IsKeyDown(ysKey::Code::E)) {
         m_targetSpeedSetting = 0.2;
+        m_fineThrottleControlUsed = false;
     }
     else if (m_engine.IsKeyDown(ysKey::Code::R)) {
         m_targetSpeedSetting = 1.0;
+        m_fineThrottleControlUsed = false;
     }
     else if (fineControlMode && !fineControlInUse) {
         m_targetSpeedSetting = clamp(m_targetSpeedSetting + mouseWheelDelta * 0.0001);
+        m_fineThrottleControlUsed = true;
     }
 
     if (prevTargetThrottle != m_targetSpeedSetting) {
