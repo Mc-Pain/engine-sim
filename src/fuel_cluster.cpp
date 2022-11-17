@@ -149,6 +149,13 @@ void FuelCluster::render() {
         }
     }
 
+    ss = std::stringstream();
+    ss << std::setprecision(0) << std::fixed;
+    ss << std::setfill('0') << std::setw(5) << units::convert(travelledDistance, units::km);
+
+    const Bounds odoBounds = grid.get(bodyBounds, 0, 9);
+    drawText(ss.str(), odoBounds, 12.0f, Bounds::lm);
+
     UiElement::render();
 }
 
