@@ -24,10 +24,11 @@ class Transmission {
             atg_scs::RigidBody *rotatingMass,
             Vehicle *vehicle,
             Engine *engine);
-        void changeGear(int newGear);
         inline int getGear() const { return m_gear; }
         inline void setClutchPressure(double pressure) { m_clutchPressure = pressure; }
         inline double getClutchPressure() const { return m_clutchPressure; }
+        void upshift();
+        void downshift();
 
     protected:
         atg_scs::ClutchConstraint m_clutchConstraint;
@@ -40,6 +41,8 @@ class Transmission {
         double *m_gearRatios;
         double m_maxClutchTorque;
         double m_clutchPressure;
+
+        void changeGear(int newGear);
 };
 
 #endif /* ATG_ENGINE_SIM_TRANSMISSION_H */

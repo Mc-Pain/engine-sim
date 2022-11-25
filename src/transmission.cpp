@@ -56,6 +56,14 @@ void Transmission::addToSystem(
     system->addConstraint(&m_clutchConstraint);
 }
 
+void Transmission::upshift() {
+    changeGear(m_gear + 1);
+}
+
+void Transmission::downshift() {
+    changeGear(m_gear - 1);
+}
+
 void Transmission::changeGear(int newGear) {
     if (newGear < -1 || newGear >= m_gearCount) return;
     else if (newGear != -1) {

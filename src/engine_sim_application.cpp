@@ -938,13 +938,13 @@ void EngineSimApplication::processEngineInput() {
     }
 
     if (m_engine.ProcessKeyDown(ysKey::Code::Up)) {
-        m_simulator.getTransmission()->changeGear(m_simulator.getTransmission()->getGear() + 1);
+        m_simulator.getTransmission()->upshift();
 
         m_infoCluster->setLogMessage(
             "UPSHIFTED TO " + std::to_string(m_simulator.getTransmission()->getGear() + 1));
     }
     else if (m_engine.ProcessKeyDown(ysKey::Code::Down)) {
-        m_simulator.getTransmission()->changeGear(m_simulator.getTransmission()->getGear() - 1);
+        m_simulator.getTransmission()->downshift();
 
         if (m_simulator.getTransmission()->getGear() != -1) {
             m_infoCluster->setLogMessage(
