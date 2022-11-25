@@ -3,6 +3,7 @@
 #include "../include/constants.h"
 #include "../include/units.h"
 #include "../include/fuel.h"
+#include "../include/utilities.h"
 
 #include <cmath>
 #include <assert.h>
@@ -126,6 +127,18 @@ void Engine::destroy() {
 
 Crankshaft *Engine::getOutputCrankshaft() const {
     return &m_crankshafts[0];
+}
+
+void Engine::setTargetSpeedControl(double s) {
+    m_targetSpeedControl = clamp(s);
+}
+
+double Engine::getTargetSpeedControl() {
+    return m_targetSpeedControl;
+}
+
+void Engine::updateSpeedControl() {
+    setSpeedControl(m_targetSpeedControl * 0.5 + 0.5 * getSpeedControl());
 }
 
 void Engine::setSpeedControl(double s) {

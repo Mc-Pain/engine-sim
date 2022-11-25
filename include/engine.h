@@ -52,6 +52,9 @@ class Engine : public Part {
         virtual Crankshaft *getOutputCrankshaft() const;
         virtual void setSpeedControl(double s);
         virtual double getSpeedControl();
+        virtual void setTargetSpeedControl(double s);
+        virtual double getTargetSpeedControl();
+        virtual void updateSpeedControl();
         virtual void setThrottle(double throttle);
         virtual double getThrottle() const;
         virtual double getThrottlePlateAngle() const;
@@ -132,6 +135,7 @@ class Engine : public Part {
         Fuel m_fuel;
 
         Throttle *m_throttle;
+        double m_targetSpeedControl = 0.0;
 
         double m_throttleValue;
         double m_displacement;

@@ -96,9 +96,6 @@ class EngineSimApplication {
         void refreshUserInterface();
 
     protected:
-        double m_speedSetting = 1.0;
-        double m_targetSpeedSetting = 1.0;
-
         int m_lastMouseWheel = 0;
 
     protected:

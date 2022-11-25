@@ -825,36 +825,36 @@ void EngineSimApplication::processEngineInput() {
         fineControlInUse = true;
     }
 
-    const double prevTargetThrottle = m_targetSpeedSetting;
-    m_targetSpeedSetting = m_fineThrottleControlUsed ? m_targetSpeedSetting : 0.0;
+    const double prevTargetThrottle = m_iceEngine->getTargetSpeedControl();
+    if (!m_fineThrottleControlUsed) {
+        m_iceEngine->setTargetSpeedControl(0.0);
+    }
     if (m_engine.IsKeyDown(ysKey::Code::Q)) {
-        m_targetSpeedSetting = 0.01;
+        m_iceEngine->setTargetSpeedControl(0.01);
         m_fineThrottleControlUsed = false;
     }
     else if (m_engine.IsKeyDown(ysKey::Code::W)) {
-        m_targetSpeedSetting = 0.1;
+        m_iceEngine->setTargetSpeedControl(0.1);
         m_fineThrottleControlUsed = false;
     }
     else if (m_engine.IsKeyDown(ysKey::Code::E)) {
-        m_targetSpeedSetting = 0.2;
+        m_iceEngine->setTargetSpeedControl(0.2);
         m_fineThrottleControlUsed = false;
     }
     else if (m_engine.IsKeyDown(ysKey::Code::R)) {
-        m_targetSpeedSetting = 1.0;
+        m_iceEngine->setTargetSpeedControl(1.0);
         m_fineThrottleControlUsed = false;
     }
     else if (fineControlMode && !fineControlInUse) {
-        m_targetSpeedSetting = clamp(m_targetSpeedSetting + mouseWheelDelta * 0.0001);
+        m_iceEngine->setTargetSpeedControl(m_iceEngine->getTargetSpeedControl() + mouseWheelDelta * 0.0001);
         m_fineThrottleControlUsed = true;
     }
 
-    if (prevTargetThrottle != m_targetSpeedSetting) {
-        m_infoCluster->setLogMessage("Speed control set to " + std::to_string(m_targetSpeedSetting));
+    if (prevTargetThrottle != m_iceEngine->getTargetSpeedControl()) {
+        m_infoCluster->setLogMessage("Speed control set to " + std::to_string(m_iceEngine->getTargetSpeedControl()));
     }
 
-    m_speedSetting = m_targetSpeedSetting * 0.5 + 0.5 * m_speedSetting;
-
-    m_iceEngine->setSpeedControl(m_speedSetting);
+    m_iceEngine->updateSpeedControl();
     if (m_engine.ProcessKeyDown(ysKey::Code::M)) {
         const int currentLayer = getViewParameters().Layer0;
         if (currentLayer + 1 < m_iceEngine->getMaxDepth()) {
