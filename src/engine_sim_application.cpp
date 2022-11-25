@@ -826,7 +826,7 @@ void EngineSimApplication::processEngineInput() {
     }
 
     const double prevTargetThrottle = m_iceEngine->getTargetSpeedControl();
-    if (!m_fineThrottleControlUsed) {
+    if (!m_fineThrottleControlUsed && !m_simulator.getTransmission()->isShifting()) {
         m_iceEngine->setTargetSpeedControl(0.0);
     }
     if (m_engine.IsKeyDown(ysKey::Code::Q)) {
@@ -965,7 +965,7 @@ void EngineSimApplication::processEngineInput() {
         m_simulator.getTransmission()->setTargetClutchPressure(0.0);
         m_infoCluster->setLogMessage("CLUTCH DEPRESSED");
     }
-    else if (!m_engine.IsKeyDown(ysKey::Code::Y)) {
+    else if (!m_engine.IsKeyDown(ysKey::Code::Y) && !m_simulator.getTransmission()->isShifting()) {
         m_simulator.getTransmission()->setTargetClutchPressure(1.0);
     }
 

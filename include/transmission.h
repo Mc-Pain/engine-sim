@@ -31,6 +31,7 @@ class Transmission {
         inline void setTargetClutchPressure(double pressure) { m_targetClutchPressure = clamp(pressure); }
         inline double getTargetClutchPressure() const { return m_targetClutchPressure; }
         void updateClutchPressure(double clutch_s);
+        inline bool isShifting() const { return m_upshift || m_downshift; }
 
         void upshift();
         void downshift();
@@ -39,6 +40,7 @@ class Transmission {
         atg_scs::ClutchConstraint m_clutchConstraint;
         atg_scs::RigidBody *m_rotatingMass;
         Vehicle *m_vehicle;
+        Engine *m_engine;
 
         int m_gear;
         int m_newGear;
@@ -47,6 +49,10 @@ class Transmission {
         double m_maxClutchTorque;
         double m_clutchPressure = 1.0;
         double m_targetClutchPressure = 1.0;
+
+        bool m_upshift;
+        bool m_downshift;
+        double m_storedThrottle = 0.0;
 
         void changeGear(int newGear);
 };

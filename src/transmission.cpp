@@ -49,6 +49,7 @@ void Transmission::addToSystem(
 {
     m_rotatingMass = rotatingMass;
     m_vehicle = vehicle;
+    m_engine = engine;
 
     m_clutchConstraint.setBody1(&engine->getOutputCrankshaft()->m_body);
     m_clutchConstraint.setBody2(m_rotatingMass);
@@ -57,11 +58,37 @@ void Transmission::addToSystem(
 }
 
 void Transmission::upshift() {
+    int oldGear = m_gear;
+
     changeGear(m_gear + 1);
+
+    // can't shift further
+    if (oldGear == m_gearCount - 1) {
+        return;
+    }
+
+    if (!isShifting()) {
+        m_storedThrottle = m_engine->getTargetSpeedControl();
+    }
+    m_upshift = true;
+    m_targetClutchPressure = 0.0;
+    m_engine->setTargetSpeedControl(0.0);
 }
 
 void Transmission::downshift() {
     changeGear(m_gear - 1);
+
+    // neutral
+    if (m_gear == -1) {
+        return;
+    }
+
+    if (!isShifting()) {
+        m_storedThrottle = m_engine->getTargetSpeedControl();
+    }
+    m_downshift = true;
+    m_targetClutchPressure = 0.0;
+    m_engine->setTargetSpeedControl(1.0);
 }
 
 void Transmission::changeGear(int newGear) {
@@ -91,4 +118,21 @@ void Transmission::changeGear(int newGear) {
 
 void Transmission::updateClutchPressure(double clutch_s) {
     m_clutchPressure = m_clutchPressure * (1 - clutch_s) + m_targetClutchPressure * clutch_s;
+
+    double vs = units::convert(m_vehicle->getSpeed(), units::m / units::minute);
+    double tr = units::convert(m_vehicle->getTireRadius(), units::m);
+    double wheelRPM = (vs / tr) / (constants::pi * 2);
+    double targetRPM = (m_gear != -1) ? (wheelRPM * m_vehicle->getDiffRatio() * m_gearRatios[m_gear]) : 0.0;
+
+    if (m_upshift && m_engine->getRpm() < targetRPM) {
+        m_upshift = false;
+        m_engine->setTargetSpeedControl(m_storedThrottle);
+        m_targetClutchPressure = 1.0;
+    }
+
+    if (m_downshift && m_engine->getRpm() > targetRPM) {
+        m_downshift = false;
+        m_engine->setTargetSpeedControl(m_storedThrottle);
+        m_targetClutchPressure = 1.0;
+    }
 }
