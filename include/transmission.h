@@ -4,6 +4,7 @@
 #include "vehicle.h"
 #include "engine.h"
 #include "scs.h"
+#include "utilities.h"
 
 class Transmission {
     public:
@@ -27,6 +28,10 @@ class Transmission {
         inline int getGear() const { return m_gear; }
         inline void setClutchPressure(double pressure) { m_clutchPressure = pressure; }
         inline double getClutchPressure() const { return m_clutchPressure; }
+        inline void setTargetClutchPressure(double pressure) { m_targetClutchPressure = clamp(pressure); }
+        inline double getTargetClutchPressure() const { return m_targetClutchPressure; }
+        void updateClutchPressure(double clutch_s);
+
         void upshift();
         void downshift();
 
@@ -40,7 +45,8 @@ class Transmission {
         int m_gearCount;
         double *m_gearRatios;
         double m_maxClutchTorque;
-        double m_clutchPressure;
+        double m_clutchPressure = 1.0;
+        double m_targetClutchPressure = 1.0;
 
         void changeGear(int newGear);
 };

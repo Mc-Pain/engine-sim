@@ -956,24 +956,22 @@ void EngineSimApplication::processEngineInput() {
     }
 
     if (m_engine.IsKeyDown(ysKey::Code::T)) {
-        m_targetClutchPressure -= 0.2 * dt;
+        m_simulator.getTransmission()->setTargetClutchPressure(m_simulator.getTransmission()->getTargetClutchPressure() - 0.2 * dt);
     }
     else if (m_engine.IsKeyDown(ysKey::Code::U)) {
-        m_targetClutchPressure += 0.2 * dt;
+        m_simulator.getTransmission()->setTargetClutchPressure(m_simulator.getTransmission()->getTargetClutchPressure() + 0.2 * dt);
     }
     else if (m_engine.IsKeyDown(ysKey::Code::Shift)) {
-        m_targetClutchPressure = 0.0;
+        m_simulator.getTransmission()->setTargetClutchPressure(0.0);
         m_infoCluster->setLogMessage("CLUTCH DEPRESSED");
     }
     else if (!m_engine.IsKeyDown(ysKey::Code::Y)) {
-        m_targetClutchPressure = 1.0;
+        m_simulator.getTransmission()->setTargetClutchPressure(1.0);
     }
 
     if (m_engine.ProcessKeyDown(ysKey::Code::P)) {
         m_rightGaugeCluster->toggleInstantConsumption();
     }
-
-    m_targetClutchPressure = clamp(m_targetClutchPressure);
 
     double clutchRC = 0.001;
     if (m_engine.IsKeyDown(ysKey::Code::Space)) {
@@ -981,8 +979,7 @@ void EngineSimApplication::processEngineInput() {
     }
 
     const double clutch_s = dt / (dt + clutchRC);
-    m_clutchPressure = m_clutchPressure * (1 - clutch_s) + m_targetClutchPressure * clutch_s;
-    m_simulator.getTransmission()->setClutchPressure(m_clutchPressure);
+    m_simulator.getTransmission()->updateClutchPressure(clutch_s);
 }
 
 void EngineSimApplication::renderScene() {

@@ -99,8 +99,6 @@ class EngineSimApplication {
         double m_speedSetting = 1.0;
         double m_targetSpeedSetting = 1.0;
 
-        double m_clutchPressure = 1.0;
-        double m_targetClutchPressure = 1.0;
         int m_lastMouseWheel = 0;
 
     protected:

@@ -88,3 +88,7 @@ void Transmission::changeGear(int newGear) {
 
     m_gear = newGear;
 }
+
+void Transmission::updateClutchPressure(double clutch_s) {
+    m_clutchPressure = m_clutchPressure * (1 - clutch_s) + m_targetClutchPressure * clutch_s;
+}
