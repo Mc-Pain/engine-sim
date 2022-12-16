@@ -71,8 +71,14 @@ void Transmission::upshift() {
         m_storedThrottle = m_engine->getTargetSpeedControl();
     }
     m_upshift = true;
-    m_targetClutchPressure = 0.0;
-    m_engine->setTargetSpeedControl(0.0);
+
+    // to actually start moving, clutch needs to be a bit engaged to prevent engine stall
+    if (m_gear == 0) {
+        m_targetClutchPressure = 0.1;
+    } else {
+        m_targetClutchPressure = 0.0;
+        m_engine->setTargetSpeedControl(0.0);
+    }
 }
 
 void Transmission::downshift() {
@@ -114,25 +120,38 @@ void Transmission::changeGear(int newGear) {
     }
 
     m_gear = newGear;
+    recalculateTargetRPM();
+}
+
+void Transmission::recalculateTargetRPM() {
+    double vs = units::convert(m_vehicle->getSpeed(), units::m / units::minute);
+    double tr = units::convert(m_vehicle->getTireRadius(), units::m);
+    double wheelRPM = (vs / tr) / (constants::pi * 2);
+    m_targetRPM = (m_gear != -1) ? (wheelRPM * m_vehicle->getDiffRatio() * m_gearRatios[m_gear]) : 0.0;
 }
 
 void Transmission::updateClutchPressure(double clutch_s) {
     m_clutchPressure = m_clutchPressure * (1 - clutch_s) + m_targetClutchPressure * clutch_s;
 
-    double vs = units::convert(m_vehicle->getSpeed(), units::m / units::minute);
-    double tr = units::convert(m_vehicle->getTireRadius(), units::m);
-    double wheelRPM = (vs / tr) / (constants::pi * 2);
-    double targetRPM = (m_gear != -1) ? (wheelRPM * m_vehicle->getDiffRatio() * m_gearRatios[m_gear]) : 0.0;
+    recalculateTargetRPM();
 
-    if (m_upshift && m_engine->getRpm() < targetRPM) {
+    if (m_upshift && m_engine->getRpm() < m_targetRPM) {
         m_upshift = false;
         m_engine->setTargetSpeedControl(m_storedThrottle);
         m_targetClutchPressure = 1.0;
     }
 
-    if (m_downshift && m_engine->getRpm() > targetRPM) {
+    if (m_downshift && m_engine->getRpm() > m_targetRPM) {
         m_downshift = false;
         m_engine->setTargetSpeedControl(m_storedThrottle);
         m_targetClutchPressure = 1.0;
+    }
+
+    if (m_downshift && m_targetRPM > units::toRpm(m_engine->getRedline())) {
+        m_targetClutchPressure = 0.1;
+        m_engine->setTargetSpeedControl(0.0);
+    } else if (m_downshift && m_targetRPM < units::toRpm(m_engine->getRedline())) {
+        m_targetClutchPressure = 0.0;
+        m_engine->setTargetSpeedControl(1.0);
     }
 }

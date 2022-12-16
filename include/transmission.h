@@ -35,6 +35,7 @@ class Transmission {
 
         void upshift();
         void downshift();
+        void recalculateTargetRPM();
 
     protected:
         atg_scs::ClutchConstraint m_clutchConstraint;
@@ -49,6 +50,7 @@ class Transmission {
         double m_maxClutchTorque;
         double m_clutchPressure = 1.0;
         double m_targetClutchPressure = 1.0;
+        double m_targetRPM;
 
         bool m_upshift;
         bool m_downshift;
